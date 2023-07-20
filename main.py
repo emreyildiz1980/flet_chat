@@ -1,8 +1,5 @@
 import flet as ft
-
-
-
-
+import socket
 
 def create_message_row(page, message, who):
     empty_container = ft.Container(width=page.window_width / 2, )
@@ -35,16 +32,23 @@ def get_message_container(page, message, color):
 
 def main(page: ft.Page):
     def send_message(e):
+
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        host = socket.gethostname()
+        port = 4445
+
         lv.controls.append(create_message_row(page, input1.value, "ME"))
-        input1.value = ""
         page.update()
 
+        client_socket.connect(('192.168.1.5', port))
+        message = input1.value
+        input1.value = ""
+        client_socket.send(message.encode())
     page.title = "Flet Chat Application"
     page.bgcolor = ft.colors.WHITE
 
-    page.window_width = 800
-    page.window_height = 800
-    page.window_resizable = False
+    page.window_width = 600
+    page.window_height = 900
 
     lv = ft.ListView(expand=1, spacing=10, padding=20, auto_scroll=True)
 
@@ -82,6 +86,7 @@ def main(page: ft.Page):
             ],
         )
     )
+
 
 
 ft.app(target=main)
